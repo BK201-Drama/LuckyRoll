@@ -33,7 +33,37 @@
         :visible.sync="drawerR"
         direction="rtl"
         :with-header="false">
-        <span>我来啦!</span>
+        <el-table
+          :data="tableData"
+          border
+          style="width: 100%">
+          <el-table-column
+            prop="studentName"
+            label="姓名"
+            width="100"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="studentMessage"
+            label="学号"
+            width="50"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="id"
+            label="编号"
+            width="110"
+            align="center">
+          </el-table-column>
+
+          <el-table-column
+            label="操作"
+            width="200"
+            align="center">
+              <el-button @click="handleClick(scope.row)" type="text" size="small">二倍抽取</el-button>
+              <el-button type="text" size="small">十倍抽取</el-button>
+          </el-table-column>
+        </el-table>
       </el-drawer>
 
 
@@ -63,11 +93,15 @@
   export default {
     data(){
       return {
+        constTableData: [],
+        tableData: [],
         fileList: [],
         dataArr: [],
         peopleIndex: null,
         // 我们要根据drawType的不同来进行不同的抽取模式
         drawType: null,
+        ischooseFile: false,
+        isSelectedData: null,
         
         // 这是抽屉
         drawerL: false,
@@ -80,10 +114,17 @@
     methods: {
       // 添加文件，已经没有问题，能成功导入
       async addFile () {
+        console.log(this.ischooseFile)
+        if(this.ischooseFile === false){
+          alert("请先导入文件")
+          return 0
+        }
+
         let param = this.dataArr
         // 变换抽取的种类
         this.drawType = 0
         var tp = this.drawType
+
 
         // post请求，需要发数组时，我们需要调用qs,再使用json字符串格式转换，放进params里面，并且加上：{ indices: false }才可成功传入
         axios.post('http://localhost:3000/myRoll', qs.stringify({
@@ -95,15 +136,17 @@
         )).then((response) => {
           console.log(response.data.Msg)
         })
+
+        this.ischooseFile = false
+        var res = await axios.get('http://localhost:3000/myRoll')
+        this.dataArr = JSON.parse(res.data.param)
+        console.log(this.dataArr)
+        this.tableData = res.data.param
       },
 
       async drawName () {
-        if(this.dataArr.length <= 0){
-          return
-        }
         // 变换抽取的种类
         this.drawType = 1
-        let studentName
         var tp = this.drawType
 
         // post请求，需要发数组时，我们需要调用qs,再使用json字符串格式转换，放进params里面，并且加上：{ indices: false }才可成功传入
@@ -115,7 +158,7 @@
         ))
 
         // 真正抽中的学生名字
-        studentName = response.data.studentName
+        let studentName = response.data.studentName
         // 将数据库的所有值都传给前端
         // 这个数据的意义在于做一个开局抽取动画
         this.dataArr = JSON.parse(response.data.param)
@@ -138,6 +181,8 @@
         await setTimeout(() => {
           music.play()
         }, this.dataArr.length * 11)
+
+        this.tableData = this.dataArr
       
       },
 
@@ -149,7 +194,9 @@
           studentName: document.getElementById("x").innerHTML
         }
 
-        var k = await axios.post('http://localhost:3000/myRoll/twoTime')
+        var k = await axios.post('http://localhost:3000/myRoll/twoTime', {
+          
+        })
         console.log(k)
 
         var response = await axios.post('http://localhost:3000/myRoll', qs.stringify({
@@ -182,7 +229,16 @@
 
       },
 
-      drawTenTimes () {
+      async drawTenTimes () {
+        // console.log(this.dataArr)
+        if(document.getElementById("x").innerHTML === '请导入抽取数据'){
+          alert("不可操作，因为没有抽过人，不知指定谁为十倍")
+        }
+
+        if(this.dataArr.length <= 0){
+          alert("数据库没有数据供抽取，请导入")
+          return
+        }
         // 概率抽十倍，是瞬时的，因此是不用持久化到数据库的，这一点需要注意
         // 改变抽取种类3
         this.drawType = 3
@@ -199,7 +255,7 @@
         // 抽签效果
         // 这个定时器表示每30ms发送一次信号，直到clearInterval为止
         let i = 0
-        let timer = setInterval(() => {
+        let timer = await setInterval(() => {
           // 注意不要越界了，范围是0 ~ length - 1
           // 注意了，还是要有一个把数据库的所有值给前端的操作，不然就不能做一个加载动画
           document.getElementById("x").innerHTML = this.dataArr[i].studentName
@@ -215,6 +271,8 @@
         // 读取excel文件并写入到数组中
         const files = e.target.files
         if(files.length <= 0){
+          // 做标记，表示已经读过文件
+          this.ischooseFile = false
           return false;
         }else if(!/\.(xls|xlsx)$/.test(files[0].name.toLowerCase())){
           alert('文件传格式不正确')
@@ -231,6 +289,7 @@
             })
             const wsname = workbook.SheetNames[0]//取第一张表
             this.dataArr = XLSX.utils.sheet_to_json(workbook.Sheets[wsname])//生成json表格内容
+            this.ischooseFile = true
             console.log('Json转化结果：', this.dataArr)
           } catch (e) {
             return false

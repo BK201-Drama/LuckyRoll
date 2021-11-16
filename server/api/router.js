@@ -1,5 +1,5 @@
 // 管控路由的API
-const { SelfFilledEvent } = require('../db/db')
+const { SelfFilledEvent, Cache } = require('../db/db')
 
 const add = require('./CRUD/addData.js')
 // const find = require('./CRUD/findData.js')
@@ -15,8 +15,32 @@ const router = express.Router()
 
 // ------------------------------------------------- //
 
-router.post('/home', (req, res) => {
+// 获取数据
+router.get('/myRoll', (req, res) => {
+  res.header('Access-Control-Allow-Origin','*')
+  res.header("Access-Control-Allow-Headers", "Content-Type")
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
 
+  SelfFilledEvent.find({id: 1}, (err, ret) => {
+    if(err){
+      console.log("失败")
+    }else{
+      console.log(ret)
+      SelfFilledEvent.find({}, (err2, doc) => {
+        let param = []
+        if(err2){
+          console.log("失败")
+        }else{
+          param = doc
+          // 传参有两个：抽到的学生的名字 --- 整个数组
+          res.send({
+            'studentName': ret[0].studentName,
+            'param': JSON.stringify(param)
+          })
+        }
+      })
+    }
+  })
 })
 
 router.post('/myRoll', (req, res) => {
@@ -34,12 +58,20 @@ router.post('/myRoll', (req, res) => {
     res.send({'Msg': "导入成功"})
     return
 
-  } else if (req.body.params.type == 1) {
+  } 
+  
+  else if (req.body.params.type == 1) {
     // 太牛了，我都不知道可以用中文做json属性名
     // console.log(req.body.params.ids.姓名[0])
 
     // 一个随机的index
     var idx = RandomNumber(0, 123)
+
+    // Cache.create({
+    //   studentName: "name",
+    //   studentMessage: "message",
+    //   id: 1
+    // })
 
     SelfFilledEvent.find({id: idx}, (err, ret) => {
       if(err){
@@ -60,13 +92,6 @@ router.post('/myRoll', (req, res) => {
         })
       }
     })
-
-  } else if (req.body.params.type == 2){
-
-  } else if (req.body.params.type == 3) {
-
-  } else if (req.body.params.type == 4) {
-    // 暂时没做
   }
 })
 
@@ -75,6 +100,7 @@ router.post('/myRoll/twoTime', (req, res) => {
   res.header("Access-Control-Allow-Headers", "Content-Type")
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
 
+  
   res.send({'Msg': "导入成功"})
 })
 

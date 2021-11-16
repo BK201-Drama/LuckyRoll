@@ -1,7 +1,7 @@
 const { SelfFilledEvent } = require('../../db/db.js')
 
 // 三种查找的方法
-const findDataByName = (objName) => {
+const findDataByName = async (objName) => {
   SelfFilledEvent.find({
     studentName: objName
   }, (err, ret) => {
@@ -13,7 +13,7 @@ const findDataByName = (objName) => {
   })
 }
 
-const findDataByMessage = (objMsg) => {
+const findDataByMessage = async (objMsg) => {
   SelfFilledEvent.find({
     studentMessage: objMsg
   }, (err, ret) => {
@@ -25,7 +25,7 @@ const findDataByMessage = (objMsg) => {
   })
 }
 
-const findDataById = (objId) => {
+const findDataById = async (objId) => {
   var obj = null
   obj = SelfFilledEvent.findOne({id: objId}).lean()
   // .then(result => {
@@ -34,9 +34,6 @@ const findDataById = (objId) => {
   return obj
 }
 
-let s  = findDataById(3)
-console.log(s)
-
 var find = {
   findDataByName: findDataByName,
   findDataByMessage: findDataByMessage,
@@ -44,21 +41,3 @@ var find = {
 }
 
 module.exports = find
-
-// --------------------------------------------------------------------------------- //
-
-// await function returnLength (callback) {
-//   const k = SelfFilledEvent.find().count({}, (err, res) => {
-//     if(err) {
-//       console.log(err)
-//       return
-//     } else {
-//       callback(res)
-//     } 
-//   })
-// }
-
-// const returnL = (obj) => {
-//   var k = obj
-//   return k
-// }
