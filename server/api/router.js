@@ -70,7 +70,16 @@ router.post('/myRoll', (req, res) => {
   }
 })
 
-router.post('/changeTheme', (req, res) => {
+router.post('/myRoll/twoTime', (req, res) => {
+  res.header('Access-Control-Allow-Origin','*')
+  res.header("Access-Control-Allow-Headers", "Content-Type")
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+
+  res.send({'Msg': "导入成功"})
+})
+
+
+router.post('/myRoll/range', (req, res) => {
    
 })
 

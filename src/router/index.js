@@ -21,7 +21,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/home' //重定向
+      redirect: '/myRoll' //重定向
     },
     // 首页
     {
@@ -39,7 +39,7 @@ export default new Router({
     // {
     //   path: '/myRoll',
     //   name: 'addEvent',
-    //   component: myRoll      
+    //   component: myRoll
     // },
     
     // 设置

@@ -10,9 +10,7 @@
 
       <el-container>
         <el-main>
-          <!-- <el-scrollbar style="width: 100%"> 
-            <Roll />
-          </el-scrollbar> -->
+          <!-- <Roll /> -->
         </el-main>
       </el-container>
     </el-container>
