@@ -82,11 +82,14 @@
         </el-table>
 
         <el-form :model="ruleForm" status-icon ref="ruleForm" label-width="100px" class="demo-ruleForm">
-          <el-form-item label="范围最小值" prop="Left">
-            <el-input type="Left" v-model="ruleForm.Left" autocomplete="on"></el-input>
-          </el-form-item>
-          <el-form-item label="范围最大值" prop="Right">
-            <el-input v-model.number="ruleForm.Right"></el-input>
+          <el-form-item label="范围抽取">
+            <el-col :span="11">
+              <el-input type="Left" v-model="ruleForm.Left" placeholder="请输入最小值"/>
+            </el-col>
+            <el-col :span="1" class="line">-</el-col>
+            <el-col :span="11">
+              <el-input v-model.number="ruleForm.Right" placeholder="请输入最大值"/>
+            </el-col>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('ruleForm')">抽取</el-button>
@@ -385,6 +388,25 @@
 
             console.log(response.index)
 
+                    // 真正抽中的学生名字
+            var index = response.index
+            // 将数据库的所有值都传给前端
+            // 这个数据的意义在于做一个开局抽取动画
+          
+            // 抽签效果
+            // 这个定时器表示每30秒发送一次信号，直到clearInterval为止
+            let i = 0
+            let timer = setInterval(() => {
+              // 注意不要越界了，范围是0 ~ length - 1
+              // 注意了，还是要有一个把数据库的所有值给前端的操作，不然就不能做一个加载动画
+              document.getElementById("x").innerHTML = this.dataArr[i].studentName
+              i++
+              if(i >= this.dataArr.length - 1){
+                document.getElementById("x").innerHTML = this.dataArr[index].studentName
+                window.clearInterval(timer)
+              }
+            }, 5)
+
           } else {
             console.log('error submit!!');
             return false;
@@ -412,6 +434,14 @@
 
   .RollComponent {
     margin-left: 600px;
+  }
+
+  .demo-ruleForm {
+    margin-top: 20px
+  }
+
+  .line {
+    text-align: center;
   }
 
   .rollText {

@@ -117,8 +117,8 @@ router.post('/myRoll', async (req, res) => {
   }
 
   else if(req.body.params.type == 4) {
-    var idx = RandomNumber(req.body.params.left, req.body.params.right)
-    
+    var idx = RandomNumber(parseInt(req.body.params.left), parseInt(req.body.params.right))
+    console.log(idx)
     res.send({
       index: idx
     })
