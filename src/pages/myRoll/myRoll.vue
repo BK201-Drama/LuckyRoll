@@ -1,62 +1,64 @@
 <template>
   <div>
-    <el-header>
-      <el-button @click="drawerL = true" type="primary" style="margin-left: 16px;">
-        点我打开L
-      </el-button>
-      <el-button @click="drawerR = true" type="primary" style="margin-left: 16px;">
-        点我打开R
-      </el-button>
+    <img class="myImg" src='../../assets/img/bg.png' />
+    <img class="myImg" src='../../assets/img/bg2.png' id="hide"/>
+    <img class="myImg" src='../../assets/img/bg3.png' id="hide"/>
+
+    <div class="abs">
+      <el-header>
+        <el-button type="button" class="layui-btn layui-btn-normal upload" id="up_btn" circle>
+          <input type="file" class="change" id="files" multiple="multiple" @change="chooseFile" >
+          
+          <i class="el-icon-upload2"></i>
+        </el-button>
+        <el-button @click="drawerL = true" style="margin-left: 16px;" class="el-icon-setting" circle/>
+        <el-button @click="drawerR = true" style="margin-left: 16px;" class="el-icon-s-help" circle/>
 
 
-      <el-button @click="addFile">添加该excel文件</el-button>
-      <el-button @click="drawName">抽取</el-button>
-      <el-button @click="drawTenTimes">概率瞬时提升十倍</el-button>
-      <el-button @click="drawTwoTimes">概率持久提升两倍</el-button>
-    </el-header>
+        <el-button @click="addFile">添加该excel文件</el-button>
+        <el-button @click="drawTenTimes">概率瞬时提升十倍</el-button>
+        <el-button @click="drawTwoTimes">概率持久提升两倍</el-button>
+      </el-header>
 
-    <el-drawer
-      title="我是标题"
-      :visible.sync="drawerL"
-      direction="ltr"
-      :with-header="false">
-      <span>我来啦!</span>
-    </el-drawer>
+      <el-drawer
+        title="我是标题"
+        :visible.sync="drawerL"
+        direction="ltr"
+        :with-header="false">
+        <span>我来啦!</span>
+      </el-drawer>
 
-    <el-drawer
-      title="我是标题"
-      :visible.sync="drawerR"
-      direction="rtl"
-      :with-header="false">
-      <span>我来啦!</span>
-    </el-drawer>
+      <el-drawer
+        title="我是标题"
+        :visible.sync="drawerR"
+        direction="rtl"
+        :with-header="false">
+        <span>我来啦!</span>
+      </el-drawer>
 
-    <a type="button" class="layui-btn layui-btn-normal upload" id="up_btn">
-        <input type="file" class="change" id="files" multiple="multiple" @change="chooseFile" >
-        
-        <i class="el-icon-upload2"></i>上传文件
-    </a>
 
-    <img src="../../assets/img/spinning.png" class="spinning">
+      <img src="../../assets/img/spinning2.png" class="spinning">
+      <!-- <div class="el-icon-aim spinning"></div> -->
+      <el-button @click="drawName" class="btn">抽取</el-button>
 
-    <div class="RollComponent">
-      <!-- <img src="../../assets/img/spinning.png" class="spinning"> -->
-      <p class="rollText" id="x">
-        请导入抽取数据
-      </p>
+      <div class="RollComponent">
+        <!-- <img src="../../assets/img/spinning.png" class="spinning"> -->
+        <p class="rollText" id="x">
+          请导入抽取数据
+        </p>
+      </div>
+      <video src="../../assets/audio/Oh baby a triple.mp3" preload="auto" id="music"></video>
     </div>
   </div>
 </template>
 
 <script>
-
-  import LeftWindows from '../../components/LeftWindows.vue'
   import axios from 'axios'
   import qs from 'qs'
   import XLSX from 'xlsx'
 
   import RandomNumber from '../../assets/js/drawRandomly'
-  import animation from '../../assets/js/animation'
+
   
   export default {
     data(){
@@ -73,7 +75,7 @@
       }
     },
     components: {
-      LeftWindows
+      //LeftWindows
     },
     methods: {
       // 添加文件，已经没有问题，能成功导入
@@ -96,6 +98,9 @@
       },
 
       async drawName () {
+        if(this.dataArr.length <= 0){
+          return
+        }
         // 变换抽取的种类
         this.drawType = 1
         let studentName
@@ -119,7 +124,7 @@
         // 抽签效果
         // 这个定时器表示每30秒发送一次信号，直到clearInterval为止
         let i = 0
-        let timer = setInterval(() => {
+        let timer = await setInterval(() => {
           // 注意不要越界了，范围是0 ~ length - 1
           // 注意了，还是要有一个把数据库的所有值给前端的操作，不然就不能做一个加载动画
           document.getElementById("x").innerHTML = this.dataArr[i].studentName
@@ -128,7 +133,12 @@
             document.getElementById("x").innerHTML = this.dataArr[index].studentName
             window.clearInterval(timer)
           }
-        }, 5)
+        }, 10)
+
+        await setTimeout(() => {
+          music.play()
+        }, this.dataArr.length * 11)
+      
       },
 
       async drawTwoTimes () {
@@ -226,10 +236,8 @@
             return false
           }
         }
-
         fileReader.readAsBinaryString(files[0])
       }
-
     }
   }
 </script>
@@ -258,7 +266,7 @@
     position: absolute;
     border: 1px solid #333;
     border-radius: 8%;
-    margin: 400px 40px;
+    margin: 50px 40px;
     text-align: center;
     line-height: 150px;
     font-size: 30px;
@@ -266,14 +274,35 @@
 
   .spinning {
     width: 300px;
-    height: 360px;
+    height: 300px;
     display: block;
-    float: left;
+    float: left;  
+    margin: 0px 600px;
+  }
+
+  .btn {
+    margin-left: 720px;
+    margin-top: 30px
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .spinning {
+      animation: spinning-spin infinite 5s linear;
+    }
+  }
+
+  @keyframes spinning-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .upload{
-    padding: 4px 10px;
-    height: 20px;
+    /* padding: 4px 10px; */
+    /* height: 20px; */
     position: relative;
     color: #666;
   }
@@ -284,5 +313,22 @@
     right: 0;
     top: 0;
     opacity: 0;
+  }
+
+  .myImg {
+    width: 100%;
+    height: 100%;
+    float: none;
+    position: fixed;
+    margin-left: -8px;
+    margin-top: -7px
+  }
+
+  #hide {
+    display: none
+  }
+
+  .abs {
+		position: absolute;
   }
 </style>
