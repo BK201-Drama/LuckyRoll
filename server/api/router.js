@@ -1,5 +1,5 @@
 // 管控路由的API
-const { SelfFilledEvent, Cache } = require('../db/db')
+const { SelfFilledEvent, Cache, User } = require('../db/db')
 
 const add = require('./CRUD/addData.js')
 // const find = require('./CRUD/findData.js')
@@ -14,6 +14,26 @@ const { setFdLimit } = require('process')
 const router = express.Router()
 
 // ------------------------------------------------- //
+
+router.post('/home', async (req, res) => {
+  res.header('Access-Control-Allow-Origin','*')
+  res.header("Access-Control-Allow-Headers", "Content-Type")
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+  console.log(req.body.params.username)
+  var dat = await User.find({
+    username: req.body.params.username,
+    password: req.body.params.password
+  })
+  if(dat.length <= 0){
+    res.send({
+      'isLogin': false
+    })
+    return
+  }
+  res.send({
+    'isLogin': true
+  })
+})
 
 // 获取数据列表数据
 router.get('/myRoll', async (req, res) => {
@@ -118,7 +138,6 @@ router.post('/myRoll', async (req, res) => {
 
   else if(req.body.params.type == 4) {
     var idx = RandomNumber(parseInt(req.body.params.left), parseInt(req.body.params.right))
-    console.log(idx)
     res.send({
       index: idx
     })

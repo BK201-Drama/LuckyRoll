@@ -26,11 +26,17 @@ const nameOfCacheSchema = mongoose.Schema({
   id: Number
 })
 
+const user = mongoose.Schema({
+  username: String,
+  password: String
+})
+
 // 构建模型对象，我们可以在里面再填充多个对象
 // 一个为正常表，另一个为缓存表，用于存储里面被标记高倍的数据
 const Models = {
   SelfFilledEvent: mongoose.model('SelfFilledEvent', nameOfEventSchema),
-  Cache: mongoose.model('Cache', nameOfCacheSchema)
+  Cache: mongoose.model('Cache', nameOfCacheSchema),
+  User: mongoose.model('User', user)
 }
 
 // 暴露对象

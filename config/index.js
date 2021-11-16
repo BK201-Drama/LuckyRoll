@@ -25,8 +25,15 @@ module.exports = {
         target: 'http://localhost:3000/myRoll',
         changeOrigin: true,
         pathRewrite: {
-          "^/myRoll": '/'
+          '^/myRoll': '/myRoll'
         }
+      },
+      '/home': {
+        target: 'http://localhost:3000/home',
+        changeOrigin: true,
+        // pathRewrite: {
+        //   '^/home': '/home'
+        // }
       }
     },
     

@@ -1,8 +1,6 @@
 <template>
   <div>
     <img class="myImg I1" src='../../assets/img/bg.png' />
-    <img class="myImg I2" src='../../assets/img/bg2.png' id="hide"/>
-    <img class="myImg I3" src='../../assets/img/bg3.png' id="hide"/>
 
     <div class="abs">
       <el-header>
@@ -36,8 +34,55 @@
         title="我是标题"
         :visible.sync="drawerL"
         direction="ltr"
+        size="40%"
         :with-header="false">
-        <span>我来啦!</span>
+        <template>
+          <el-col :span="5" class="selectBackground">
+            选择背景:
+          </el-col>
+          <el-col :span="11" class="selectBackground">
+            <el-select v-model="value" placeholder="请选择" @change="changeBackground">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-col>
+        </template>
+
+        <template>
+          <el-col :span="5" class="selectBackground">
+            选择转盘主题:
+          </el-col>
+          <el-col :span="11" class="selectBackground">
+            <el-select v-model="value_roll" placeholder="请选择" @change="changeRoll">
+              <el-option
+                v-for="item in options_roll"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-col>
+        </template>
+
+        <template>
+          <el-col :span="5" class="selectBackground">
+            选择音乐主题:
+          </el-col>
+          <el-col :span="11" class="selectBackground">
+            <el-select v-model="value_BGM" placeholder="请选择" @change="changeBGM">
+              <el-option
+                v-for="item in options_BGM"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-col>
+        </template>
       </el-drawer>
 
       <el-drawer
@@ -99,7 +144,7 @@
       </el-drawer>
 
 
-      <img src="../../assets/img/spinning2.png" class="spinning">
+      <img src="../../assets/img/spinning.png" class="spinning">
       <el-button @click="drawName" class="btn">抽取</el-button>
 
       <div class="RollComponent">
@@ -108,7 +153,8 @@
           请导入抽取数据
         </p>
       </div>
-      <video src="../../assets/audio/Oh baby a triple.mp3" preload="auto" id="music"></video>
+      
+      <audio src="../../assets/audio/bg1.mp3" preload="auto" :autoplay="true" class="end" id="music" :muted="false"></audio>
     </div>
   </div>
 </template>
@@ -128,6 +174,47 @@
         tableData: [],
         fileList: [],
         dataArr: [],
+
+        options: [{
+          value: 'bg.png',
+          label: '背景1'
+        }, {
+          value: 'bg2.png',
+          label: '背景2'
+        }, {
+          value: 'bg3.png',
+          label: '背景3'
+        }],
+        // 用于记录选择栏的最终选择
+        value: '',
+
+        options_roll: [{
+          value: 'spinning.png',
+          label: '转盘1'
+        }, {
+          value: 'spinning2.png',
+          label: '转盘2'
+        }, {
+          value: 'spinning3.png',
+          label: '转盘3'
+        }],
+        // 用于记录选择栏的最终选择
+        value_roll: '',
+
+        ////////////////////////////////////////////////////////
+
+        options_BGM: [{
+          value: 'bg1.mp3',
+          label: '背景音乐1'
+        }, {
+          value: 'bg2.mp3',
+          label: '背景音乐2'
+        }, {
+          value: 'bg3.mp3',
+          label: '背景音乐3'
+        }],
+        value_BGM: '',
+        isPlay: true,
 
         ruleForm: {
           Left: '',
@@ -149,6 +236,19 @@
       //LeftWindows
     },
     methods: {
+      async changeBGM (value) {
+        const audio = document.querySelector(".end")
+        audio.src = await require('../../assets/audio/' + value)
+      },
+
+      async changeRoll (value) {
+        const img = document.querySelector(".spinning")
+        img.src = await require('../../assets/img/' + value)
+      },
+      async changeBackground (value) {
+        const img = document.querySelector(".myImg")
+        img.src = await require('../../assets/img/' + value)
+      },
       async getData () {
         var res = await RollAPI.getList()
         var resp = JSON.parse(res.data.param)
@@ -377,6 +477,7 @@
             }
 
             this.type = 4
+            this.drawerR = false
             var {data: response} = await axios.post('http://localhost:3000/myRoll', qs.stringify({
               params: {
                 left: this.ruleForm.Left,
@@ -414,6 +515,10 @@
         });
       }
 
+    },    
+    
+    created: function () {
+
     }
   }
 </script>
@@ -444,6 +549,13 @@
     text-align: center;
   }
 
+  .selectBackground {
+    text-align: center;
+    margin: 20px;
+    height: 39px;
+    line-height: 39px;
+  }
+
   .rollText {
     width: 350px;
     height: 150px;
@@ -460,7 +572,7 @@
     width: 300px;
     height: 300px;
     display: block;
-    float: left;  
+    float: left;
     margin: 0px 600px;
   }
 

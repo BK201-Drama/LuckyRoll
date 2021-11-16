@@ -11,9 +11,6 @@ import myRoll from '../pages/myRoll/myRoll.vue'
 
 // ------------------------------------------------------------------ //
 
-import changeTheme from '../pages/setting/changeTheme.vue'
-import voiceControl from '../pages/setting/voiceControl.vue'
-
 
 Vue.use(Router)
 
@@ -21,9 +18,9 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/myRoll' //重定向
+      redirect: '/home' //重定向
     },
-    // 首页
+    // 首页登录
     {
       path: '/home',
       name: 'home',
@@ -34,23 +31,6 @@ export default new Router({
       path: '/myRoll',
       name: 'myRoll',
       component: myRoll
-    },
-    // 更多
-    // {
-    //   path: '/myRoll',
-    //   name: 'addEvent',
-    //   component: myRoll
-    // },
-    
-    // 设置
-    {
-      path:'/changeTheme',
-      name: 'changeTheme',
-      component: changeTheme
-    },{
-      path:'/voiceControl',
-      name: 'voiceControl',
-      component: voiceControl
     }
   ]
 }) 
