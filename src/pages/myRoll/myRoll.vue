@@ -1,6 +1,6 @@
 <template>
   <div>
-    <img class="myImg I1" src='../../assets/img/bg.png' />
+    <img class="myImg I1" src='../../assets/img/bg.png' muted/>
 
     <div class="abs">
       <el-header>
@@ -70,6 +70,22 @@
 
         <template>
           <el-col :span="5" class="selectBackground">
+            选择音效主题:
+          </el-col>
+          <el-col :span="11" class="selectBackground">
+            <el-select v-model="valueBgmAcoustic" placeholder="请选择" @change="changeBgmAcoustic">
+              <el-option
+                v-for="item in optionsValueBgmAcoustic"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-col>
+        </template>
+
+        <template>
+          <el-col :span="5" class="selectBackground">
             选择音乐主题:
           </el-col>
           <el-col :span="11" class="selectBackground">
@@ -81,6 +97,18 @@
                 :value="item.value">
               </el-option>
             </el-select>
+          </el-col>
+        </template>
+
+        <template>
+          <el-col :span="5" class="selectBackground">
+            是否开启音乐:
+          </el-col>
+          <el-col :span="4" class="selectBackground">
+            <el-switch
+              v-model="switchValue"
+              @change="switchChange">
+            </el-switch>
           </el-col>
         </template>
       </el-drawer>
@@ -154,7 +182,7 @@
         </p>
       </div>
       
-      <audio src="../../assets/audio/bg1.mp3" preload="auto" :autoplay="true" class="end" id="music" :muted="false"></audio>
+      <video src="../../assets/audio/bg1.mp3" class="end" id="music" autoplay="autoplay"></video>
     </div>
   </div>
 </template>
@@ -174,6 +202,7 @@
         tableData: [],
         fileList: [],
         dataArr: [],
+        switchValue: false,
 
         options: [{
           value: 'bg.png',
@@ -186,7 +215,9 @@
           label: '背景3'
         }],
         // 用于记录选择栏的最终选择
-        value: '',
+        value: 'bg.png',
+
+        ////////////////////////////////////////////////////////
 
         options_roll: [{
           value: 'spinning.png',
@@ -199,7 +230,7 @@
           label: '转盘3'
         }],
         // 用于记录选择栏的最终选择
-        value_roll: '',
+        value_roll: 'spinning.png',
 
         ////////////////////////////////////////////////////////
 
@@ -213,8 +244,24 @@
           value: 'bg3.mp3',
           label: '背景音乐3'
         }],
-        value_BGM: '',
+        value_BGM: 'bg1.mp3',
         isPlay: true,
+
+        ////////////////////////////////////////////////////////
+
+        optionsValueBgmAcoustic: [{
+          value: 'bg4.mp3',
+          label: '音效1'
+        },{
+          value: 'bg6.mp3',
+          label: '音效2'
+        },{
+          value: 'bg8.mp3',
+          label: '音效3'
+        }],
+        valueBgmAcoustic: 'bg4.mp3',
+
+        ////////////////////////////////////////////////////////
 
         ruleForm: {
           Left: '',
@@ -236,19 +283,37 @@
       //LeftWindows
     },
     methods: {
+      async changeBgmAcoustic (value) {
+        this.valueBgmAcoustic = value
+      },
+
       async changeBGM (value) {
         const audio = document.querySelector(".end")
         audio.src = await require('../../assets/audio/' + value)
+
+        if(this.switchValue){
+          if(this.value_BGM === ''){
+            alert('你还没有选择播放音乐')
+            this.switchValue = false
+            return
+          }
+          music.play()
+          // this.switchValue = false
+        }else{
+          music.pause()
+        }
       },
 
       async changeRoll (value) {
         const img = document.querySelector(".spinning")
         img.src = await require('../../assets/img/' + value)
       },
+
       async changeBackground (value) {
         const img = document.querySelector(".myImg")
         img.src = await require('../../assets/img/' + value)
       },
+
       async getData () {
         var res = await RollAPI.getList()
         var resp = JSON.parse(res.data.param)
@@ -297,7 +362,7 @@
       },
 
       async drawName () {
-        if(this.tableData.length <= 0 && this.dataArr.length <= 0){
+        if (this.tableData.length <= 0 && this.dataArr.length <= 0) {
           alert("没有导入数据！请提前导入数据")
           return
         }
@@ -315,6 +380,11 @@
 
         // 真正抽中的学生名字
         let studentName = response.data.studentName
+        await setTimeout(() => {
+          const audio = document.querySelector(".end")
+          audio.src = require('../../assets/audio/' + 'bg7.mp3')
+          music.play()
+        }, 0)
         
         // var index = Math.floor(Math.random() * this.dataArr.length)
         // 抽签效果
@@ -328,13 +398,13 @@
           if(i >= this.dataArr.length - 1){
             document.getElementById("x").innerHTML = studentName
             window.clearInterval(timer)
-          }
-        }, 10)
+            music.pause()
 
-        await setTimeout(() => {
-          music.play()
-        }, this.dataArr.length * 11)
-      
+            const audio = document.querySelector(".end")
+            audio.src = require('../../assets/audio/' + this.valueBgmAcoustic)
+            music.play()
+          }
+        }, 25)
       },
 
       async drawTwoTimes (row) {
@@ -364,6 +434,12 @@
       
         // 抽签效果
         // 这个定时器表示每30秒发送一次信号，直到clearInterval为止
+        await setTimeout(() => {
+          const audio = document.querySelector(".end")
+          audio.src = require('../../assets/audio/' + 'bg7.mp3')
+          music.play()
+        }, 0)
+
         let i = 0
         let timer = setInterval(() => {
           // 注意不要越界了，范围是0 ~ length - 1
@@ -373,8 +449,11 @@
           if(i >= this.dataArr.length - 1){
             document.getElementById("x").innerHTML = this.dataArr[index].studentName
             window.clearInterval(timer)
+            const audio = document.querySelector(".end")
+            audio.src = require('../../assets/audio/' + this.valueBgmAcoustic)
+            music.play()
           }
-        }, 5)
+        }, 25)
 
       },
 
@@ -414,6 +493,12 @@
         // 改变抽取种类3
         this.drawType = 3
 
+        await setTimeout(() => {
+          const audio = document.querySelector(".end")
+          audio.src = require('../../assets/audio/' + 'bg7.mp3')
+          music.play()
+        }, 0)
+
         // 抽签效果
         // 这个定时器表示每30ms发送一次信号，直到clearInterval为止
         let i = 0
@@ -425,8 +510,11 @@
           if(i >= this.dataArr.length - 1){
             document.getElementById("x").innerHTML = this.dataArr[index].studentName
             window.clearInterval(timer)
+            const audio = document.querySelector(".end")
+            audio.src = require('../../assets/audio/' + this.valueBgmAcoustic)
+            music.play()
           }
-        }, 5)
+        }, 25)
       },
 
       chooseFile (e) {
@@ -489,7 +577,7 @@
 
             console.log(response.index)
 
-                    // 真正抽中的学生名字
+            // 真正抽中的学生名字
             var index = response.index
             // 将数据库的所有值都传给前端
             // 这个数据的意义在于做一个开局抽取动画
@@ -513,9 +601,24 @@
             return false;
           }
         });
+      },
+
+      async switchChange (value) {
+        console.log(value)
+        if(value){
+          if(this.value_BGM === ''){
+            alert('你还没有选择播放音乐')
+            this.switchValue = false
+            return
+          }
+          music.play()
+          // this.switchValue = false
+        }else{
+          music.pause()
+        }
       }
 
-    },    
+    },
     
     created: function () {
 
