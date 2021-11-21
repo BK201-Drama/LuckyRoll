@@ -22,7 +22,3 @@ export async function TwoDraw (param) {
   var res = await axios.post('http://localhost:3000/myRoll', param)
   return res.data.data
 }
-
-export async function ten () {
-  return 1
-}
