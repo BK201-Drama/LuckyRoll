@@ -202,7 +202,7 @@
         tableData: [],
         fileList: [],
         dataArr: [],
-        switchValue: false,
+        switchValue: true,
 
         options: [{
           value: 'bg.png',
@@ -214,7 +214,7 @@
           value: 'bg3.png',
           label: '背景3'
         }],
-        // 用于记录选择栏的最终选择
+        // 用于记录选择栏的最终选择 
         value: 'bg.png',
 
         ////////////////////////////////////////////////////////
